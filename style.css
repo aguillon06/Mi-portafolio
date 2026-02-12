@@ -374,4 +374,13 @@ h2 { font-size: 2.5rem; margin-bottom: 2rem; text-align: center; }
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 5px var(--primary)); /* Este es el efecto neón */
 }
+/* El texto que cambia o resalta */
+.typing-text {
+    background: linear-gradient(90deg, #00f2ff, #bc13fe); /* Cian a Púrpura */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.7)); /* El resplandor neón */
+}
+
 
