@@ -535,6 +535,50 @@ body {
     z-index: -1;
     background: #000;
 }
+/* --- Ajustes Específicos para Servicios --- */
+.servicios-page {
+    background-color: #000 !important; /* Fuerza el fondo negro */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.servicios-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el título y subtítulo */
+    text-align: center;
+}
+
+.servicios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra las tarjetas horizontalmente */
+    gap: 30px;
+    margin-top: 50px;
+    width: 100%;
+}
+
+/* Ajuste de tarjetas para que se vean uniformes */
+.price-card {
+    flex: 1;
+    min-width: 300px;
+    max-width: 350px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    transition: 0.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 
 
