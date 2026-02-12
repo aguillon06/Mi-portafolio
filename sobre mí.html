@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Mí | Juan Pérez</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <style>
+        /* Estilos específicos para esta página */
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .profile-img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background-image: url('img/yo.jpeg'); /* Pon aquí tu foto real */
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(0, 242, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); }
+        }
+        .bio-text { flex: 1; min-width: 300px; }
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas> <nav class="navbar">
+        <a href="index.html" class="logo">JUAN<span>DEV</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="sobre mí.html" class="active">Sobre Mí</a></li>
+            <li><a href="habilidades.html">Skills</a></li>
+            <li><a href="proyecto.html">Proyectos</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="glass-card profile-container">
+            <div class="profile-img"></div> <div class="bio-text">
+                <h2 class="gradient-text" style="text-align: left;">¿Quién soy?</h2>
+                <p style="margin-bottom: 1.5rem; color: #ddd; line-height: 1.8;">
+                    Soy más que un simple programador; soy un <strong>arquitecto digital</strong>. Mi pasión no es solo escribir líneas de código, sino resolver problemas complejos con soluciones elegantes y eficientes.
+                </p>
+                <p style="color: #ddd; line-height: 1.8;">
+                    Con experiencia en el stack MERN (MongoDB, Express, React, Node), me especializo en crear aplicaciones web que son rápidas, accesibles y visualmente impactantes.
+                </p>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="assets/cv.pdf" download class="btn">Descargar CV</a>
+                </div>
+            </div>
+        </div>
+        
+        <a href="index.html" class="btn-back">← Volver al Inicio</a>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

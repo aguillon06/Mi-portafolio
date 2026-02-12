@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Proyectos</title>
+    <link rel="stylesheet" href="css/estilo.css">
+     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <nav class="navbar">
+        <a href="index.html" class="logo">JUAN<span>DEV</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="proyecto.html" class="active">Proyectos</a></li>
+            </ul>
+    </nav>
+
+    <main class="container">
+        <h2 class="gradient-text">Mis Proyectos</h2>
+        <div class="grid-projects">
+            <article class="glass-card">
+                <h3 style="color: var(--primary);">E-Commerce App</h3>
+                <p style="margin: 1rem 0; color: #ccc;">Plataforma completa de ventas con carrito de compras y pasarela de pagos.</p>
+                <div style="margin-bottom: 1rem;">
+                    <span style="font-size: 0.8rem; border: 1px solid #555; padding: 4px 8px; border-radius: 4px;">React</span>
+                    <span style="font-size: 0.8rem; border: 1px solid #555; padding: 4px 8px; border-radius: 4px;">Node.js</span>
+                </div>
+                <a href="#" style="color: white; text-decoration: underline;">Ver Demo →</a>
+            </article>
+
+            <article class="glass-card">
+                <h3 style="color: var(--primary);">Dashboard Admin</h3>
+                <p style="margin: 1rem 0; color: #ccc;">Panel administrativo para gestión de usuarios y visualización de datos.</p>
+                <a href="#" style="color: white; text-decoration: underline;">Ver Código →</a>
+            </article>
+        </div>
+        <div id="project-modal" class="modal">
+    <div class="modal-content glass-card">
+        <span class="close-modal">&times;</span>
+        <div id="modal-body">
+            </div>
+    </div>
+</div>
+        <a href="index.html" class="btn-back">← Volver</a>
+    </main>
+    <script src="js/script.js"></script>
+</body>
+</html>
