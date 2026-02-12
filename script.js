@@ -1,325 +1,124 @@
-// 1. Efecto Typing para el Index
-const textElement = document.getElementById('typing-text');
-if (textElement) {
-    const words = ["Desarrollador Web", "Diseñador UI/UX", "Creador Digital"];
-    let i = 0, j = 0, isDeleting = false;
-
-    function type() {
-        const currentWord = words[i];
-        if (isDeleting) {
-            textElement.textContent = currentWord.substring(0, j - 1);
-            j--;
-            if (j == 0) { isDeleting = false; i = (i + 1) % words.length; }
-        } else {
-            textElement.textContent = currentWord.substring(0, j + 1);
-            j++;
-            if (j == currentWord.length) { isDeleting = true; setTimeout(type, 2000); return; }
-        }
-        setTimeout(type, isDeleting ? 100 : 200);
-    }
-    type();
-}
-
-// 2. Fondo de Partículas (Canvas)
+// --- 1. FONDO DE PARTÍCULAS (EFECTO CONEXIÓN) ---
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let particlesArray;
 
-let particlesArray = [];
-const numberOfParticles = 100;
+function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', initCanvas);
+initCanvas();
 
 class Particle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-        if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+    constructor(x, y, directionX, directionY, size, color) {
+        this.x = x;
+        this.y = y;
+        this.directionX = directionX;
+        this.directionY = directionY;
+        this.size = size;
+        this.color = color;
     }
     draw() {
-        ctx.fillStyle = '#00f2ff';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f2ff';
         ctx.fill();
+    }
+    update() {
+        if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+        if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+        this.x += this.directionX;
+        this.y += this.directionY;
+        this.draw();
     }
 }
 
 function init() {
+    particlesArray = [];
+    let numberOfParticles = (canvas.height * canvas.width) / 9000;
     for (let i = 0; i < numberOfParticles; i++) {
-        particlesArray.push(new Particle());
+        let size = Math.random() * 2 + 1;
+        let x = Math.random() * (innerWidth - size * 2);
+        let y = Math.random() * (innerHeight - size * 2);
+        let directionX = (Math.random() * 1) - 0.5;
+        let directionY = (Math.random() * 1) - 0.5;
+        particlesArray.push(new Particle(x, y, directionX, directionY, size));
     }
 }
+
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
-        // Conexiones
-        for (let j = i; j < particlesArray.length; j++) {
-            const dx = particlesArray[i].x - particlesArray[j].x;
-            const dy = particlesArray[i].y - particlesArray[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < 100) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    particlesArray.forEach(p => p.update());
+    connect();
+    requestAnimationFrame(animate);
+}
+
+function connect() {
+    for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+            let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                ctx.strokeStyle = `rgba(0, 242, 255, ${1 - distance/20000})`;
                 ctx.beginPath();
-                ctx.strokeStyle = `rgba(0, 242, 255, ${1 - distance/100})`;
-                ctx.lineWidth = 0.5;
-                ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
                 ctx.stroke();
             }
         }
     }
-    requestAnimationFrame(animate);
 }
 init();
 animate();
 
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+// --- 2. EFECTO DE ESCRITURA (MÁQUINA DE ESCRIBIR) ---
+const textElement = document.querySelector('.typing-text');
+if (textElement) {
+    const words = ["Desarrollador Web", "Diseñador UI/UX", "Freelancer"];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function type() {
+        const currentWord = words[wordIndex];
+        if (isDeleting) {
+            textElement.textContent = currentWord.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            textElement.textContent = currentWord.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        let typeSpeed = isDeleting ? 100 : 200;
+        if (!isDeleting && charIndex === currentWord.length) {
+            isDeleting = true;
+            typeSpeed = 2000; // Pausa al final de la palabra
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            typeSpeed = 500;
+        }
+        setTimeout(type, typeSpeed);
+    }
+    type();
+}
+
+// --- 3. CHISPAS AL HACER CLIC ---
+window.addEventListener('click', (e) => {
+    for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        p.className = 'click-particle';
+        p.style.left = e.clientX + 'px';
+        p.style.top = e.clientY + 'px';
+        p.style.setProperty('--x', (Math.random() * 100 - 50) + 'px');
+        p.style.setProperty('--y', (Math.random() * 100 - 50) + 'px');
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+    }
 });
 
-// 3. Activar Barras de Habilidades
-const skillBars = document.querySelectorAll('.progress-bar');
-if(skillBars.length > 0) {
-    setTimeout(() => {
-        skillBars.forEach(bar => {
-            bar.style.width = bar.getAttribute('data-width');
-        });
-    }, 500);
-}
-
-const form = document.getElementById("contact-form");
-
-if (form) {
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const status = document.getElementById("form-status");
-        const data = new FormData(event.target);
-        
-        // Efecto visual de "enviando"
-        const btn = form.querySelector('button');
-        btn.textContent = "ENVIANDO...";
-        btn.style.opacity = "0.7";
-
-        fetch(event.target.action, {
-            method: form.method,
-            body: data,
-            headers: { 'Accept': 'application/json' }
-        }).then(response => {
-            if (response.ok) {
-                status.innerHTML = "¡Gracias! Tu idea ha sido enviada con éxito. ✨";
-                status.style.color = "var(--primary)";
-                status.style.display = "block";
-                form.reset();
-            } else {
-                response.json().then(data => {
-                    if (Object.hasOwn(data, 'errors')) {
-                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                    } else {
-                        status.innerHTML = "Oops! Hubo un problema al enviar.";
-                    }
-                    status.style.color = "#ff4d4d";
-                    status.style.display = "block";
-                })
-            }
-        }).catch(error => {
-            status.innerHTML = "Error de conexión. Inténtalo más tarde.";
-            status.style.display = "block";
-        }).finally(() => {
-            btn.textContent = "ENVIAR MENSAJE";
-            btn.style.opacity = "1";
-        });
-    }
-    form.addEventListener("submit", handleSubmit);
-}
-// Función para crear partículas al hacer clic
-function createParticles(x, y) {
-    const container = document.body;
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'click-particle';
-        
-        // Posición inicial (donde se hizo clic)
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        
-        // Dirección aleatoria
-        const destX = (Math.random() - 0.5) * 200;
-        const destY = (Math.random() - 0.5) * 200;
-        
-        particle.style.setProperty('--x', `${destX}px`);
-        particle.style.setProperty('--y', `${destY}px`);
-        
-        container.appendChild(particle);
-        
-        // Limpiar la partícula después de la animación
-        setTimeout(() => particle.remove(), 1000);
-    }
-}
-
-// Actualizar el listener del formulario
-const contactForm = document.getElementById("contact-form");
-if (contactForm) {
-    contactForm.addEventListener("submit", async function(event) {
-        event.preventDefault();
-        
-        // Lanzar partículas en la posición del botón
-        const rect = event.submitter.getBoundingClientRect();
-        createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
-
-        const status = document.getElementById("form-status");
-        const btn = document.getElementById("submit-btn");
-        const data = new FormData(event.target);
-
-        btn.textContent = "ENVIANDO IDEA...";
-        btn.classList.add('loading'); // Clase para animar el botón
-
-        fetch(event.target.action, {
-            method: 'POST',
-            body: data,
-            headers: { 'Accept': 'application/json' }
-        }).then(response => {
-            status.style.display = "block";
-            status.classList.add('show-message'); // Animación de entrada
-            if (response.ok) {
-                status.textContent = "¡Propuesta enviada! ✨ Revisaré tu idea pronto.";
-                status.style.color = "#00f2ff";
-                contactForm.reset();
-            } else {
-                status.textContent = "Hubo un error. ¿Podrías intentar de nuevo?";
-                status.style.color = "#ff4d4d";
-            }
-        }).catch(() => {
-            status.style.display = "block";
-            status.textContent = "Error de conexión. Revisa tu internet.";
-        }).finally(() => {
-            btn.textContent = "ENVIAR MENSAJE";
-            btn.classList.remove('loading');
-        });
-    });
-}
-
-// Base de datos de tus proyectos
-const infoProyectos = {
-    "E-Commerce App": {
-        desc: "Una tienda virtual completa con pasarela de pagos integrada.",
-        tech: ["React", "Node.js", "MongoDB"],
-        link: "https://www.tiendanube.com/co/tienda-en-linea?utm_source=google&utm_medium=cpc&utm_campaign=co-web-search-nobrand-low-region_all-device_c-id_791201217108&utm_content=ecommerce-exact&gad_source=1&gad_campaignid=20421834623&gbraid=0AAAAApO5gLty7I-JlbGyQ3R_04GYk5q0g&gclid=CjwKCAiAkbbMBhB2EiwANbxtbT0327LIZEII818PwOPhc_w3KKlKfXKgF6ZCb9-rLjYWPHYWkjKHWxoC0JUQAvD_BwE"
-    },
-    "Dashboard Admin": {
-        desc: "Panel de control con gráficas en tiempo real para empresas.",
-        tech: ["Chart.js", "Firebase", "Vue"],
-        link: "https://github.com"
-    }
-};
-
-const modal = document.getElementById("project-modal");
-const modalBody = document.getElementById("modal-body");
-
-document.querySelectorAll('.glass-card a').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Buscamos el título de la tarjeta más cercana
-        const titulo = e.target.closest('.glass-card').querySelector('h3').innerText;
-        const info = infoProyectos[titulo];
-
-        if(info) {
-            modalBody.innerHTML = `
-                <h2 class="gradient-text">${titulo}</h2>
-                <p style="margin: 1rem 0;">${info.desc}</p>
-                <div style="margin-bottom: 1.5rem;">
-                    ${info.tech.map(t => `<span class="badge">${t}</span>`).join(' ')}
-                </div>
-                <a href="${info.link}" target="_blank" class="btn">Ir al Sitio Oficial</a>
-            `;
-            modal.style.display = "block";
-        }
-    });
-});
-
-// Cerrar modal al darle a la X o fuera de la caja
-document.querySelector('.close-modal').onclick = () => modal.style.display = "none";
-
-window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
-
-// 1. Configuración del Fondo de Partículas (Para todas las páginas)
-const canvas = document.getElementById('particleCanvas');
-if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 1 - 0.5;
-            this.speedY = Math.random() * 1 - 0.5;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x > canvas.width) this.x = 0;
-            if (this.x < 0) this.x = canvas.width;
-            if (this.y > canvas.height) this.y = 0;
-            if (this.y < 0) this.y = canvas.height;
-        }
-        draw() {
-            ctx.fillStyle = '#00f2ff'; // Color neón de tu marca
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function init() {
-        for (let i = 0; i < 100; i++) {
-            particles.push(new Particle());
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-        requestAnimationFrame(animate);
-    }
-
-    init();
-    animate();
-}
-
-// 2. Efecto de "Brillo" al pasar el mouse por las tarjetas de servicios
-document.querySelectorAll('.price-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-    });
-});
-
-// 3. Sistema de navegación activa
-const currentPath = window.location.pathname.split("/").pop();
+// --- 4. NAVEGACIÓN ACTIVA ---
+const currentPath = window.location.pathname.split("/").pop() || 'index.html';
 document.querySelectorAll('nav a').forEach(link => {
     if (link.getAttribute('href') === currentPath) {
         link.classList.add('active');
