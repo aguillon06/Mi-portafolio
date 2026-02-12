@@ -520,6 +520,22 @@ h2 { font-size: 2.5rem; margin-bottom: 2rem; text-align: center; }
         padding: 2rem 1.5rem;
     }
 }
+/* Esto fuerza a que todas las páginas tengan el fondo negro neón */
+body {
+    background-color: #000 !important;
+    color: white;
+    margin: 0;
+    font-family: 'Inter', sans-serif; /* O la que uses */
+}
+
+.servicios-page #particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: #000;
+}
+
 
 
 
