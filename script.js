@@ -1,4 +1,78 @@
-/ 1. Efecto Typing para el Index
+// --- 1. CONFIGURACIÓN GLOBAL DEL CANVAS (Solo una vez) ---
+const canvas = document.getElementById('particles') || document.getElementById('particleCanvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
+
+if (canvas && ctx) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particlesArray = [];
+    const numberOfParticles = 100;
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+            if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+        }
+        draw() {
+            ctx.fillStyle = '#00f2ff';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        particlesArray = [];
+        for (let i = 0; i < numberOfParticles; i++) {
+            particlesArray.push(new Particle());
+        }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particlesArray.length; i++) {
+            particlesArray[i].update();
+            particlesArray[i].draw();
+            
+            // Conexiones de líneas entre puntos
+            for (let j = i; j < particlesArray.length; j++) {
+                const dx = particlesArray[i].x - particlesArray[j].x;
+                const dy = particlesArray[i].y - particlesArray[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 100) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(0, 242, 255, ${1 - distance/100})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                    ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initParticles();
+    });
+}
+
+// --- 2. EFECTO TYPING ---
 const textElement = document.getElementById('typing-text');
 if (textElement) {
     const words = ["Desarrollador Web", "Diseñador UI/UX", "Creador Digital"];
@@ -20,73 +94,7 @@ if (textElement) {
     type();
 }
 
-// 2. Fondo de Partículas (Canvas)
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particlesArray = [];
-const numberOfParticles = 100;
-
-class Particle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
-        if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
-    }
-    draw() {
-        ctx.fillStyle = '#00f2ff';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function init() {
-    for (let i = 0; i < numberOfParticles; i++) {
-        particlesArray.push(new Particle());
-    }
-}
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
-        // Conexiones
-        for (let j = i; j < particlesArray.length; j++) {
-            const dx = particlesArray[i].x - particlesArray[j].x;
-            const dy = particlesArray[i].y - particlesArray[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < 100) {
-                ctx.beginPath();
-                ctx.strokeStyle = `rgba(0, 242, 255, ${1 - distance/100})`;
-                ctx.lineWidth = 0.5;
-                ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                ctx.stroke();
-            }
-        }
-    }
-    requestAnimationFrame(animate);
-}
-init();
-animate();
-
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
-
-// 3. Activar Barras de Habilidades
+// --- 3. BARRAS DE HABILIDADES ---
 const skillBars = document.querySelectorAll('.progress-bar');
 if(skillBars.length > 0) {
     setTimeout(() => {
@@ -96,91 +104,37 @@ if(skillBars.length > 0) {
     }, 500);
 }
 
-const form = document.getElementById("contact-form");
+// --- 4. GESTIÓN DEL FORMULARIO (CON CHISPAS) ---
+const contactForm = document.getElementById("contact-form");
 
-if (form) {
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const status = document.getElementById("form-status");
-        const data = new FormData(event.target);
-        
-        // Efecto visual de "enviando"
-        const btn = form.querySelector('button');
-        btn.textContent = "ENVIANDO...";
-        btn.style.opacity = "0.7";
-
-        fetch(event.target.action, {
-            method: form.method,
-            body: data,
-            headers: { 'Accept': 'application/json' }
-        }).then(response => {
-            if (response.ok) {
-                status.innerHTML = "¡Gracias! Tu idea ha sido enviada con éxito. ✨";
-                status.style.color = "var(--primary)";
-                status.style.display = "block";
-                form.reset();
-            } else {
-                response.json().then(data => {
-                    if (Object.hasOwn(data, 'errors')) {
-                        status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
-                    } else {
-                        status.innerHTML = "Oops! Hubo un problema al enviar.";
-                    }
-                    status.style.color = "#ff4d4d";
-                    status.style.display = "block";
-                })
-            }
-        }).catch(error => {
-            status.innerHTML = "Error de conexión. Inténtalo más tarde.";
-            status.style.display = "block";
-        }).finally(() => {
-            btn.textContent = "ENVIAR MENSAJE";
-            btn.style.opacity = "1";
-        });
-    }
-    form.addEventListener("submit", handleSubmit);
-}
-// Función para crear partículas al hacer clic
-function createParticles(x, y) {
+function createClickParticles(x, y) {
     const container = document.body;
     for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'click-particle';
-        
-        // Posición inicial (donde se hizo clic)
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        
-        // Dirección aleatoria
+        const p = document.createElement('div');
+        p.className = 'click-particle';
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
         const destX = (Math.random() - 0.5) * 200;
         const destY = (Math.random() - 0.5) * 200;
-        
-        particle.style.setProperty('--x', `${destX}px`);
-        particle.style.setProperty('--y', `${destY}px`);
-        
-        container.appendChild(particle);
-        
-        // Limpiar la partícula después de la animación
-        setTimeout(() => particle.remove(), 1000);
+        p.style.setProperty('--x', `${destX}px`);
+        p.style.setProperty('--y', `${destY}px`);
+        container.appendChild(p);
+        setTimeout(() => p.remove(), 1000);
     }
 }
 
-// Actualizar el listener del formulario
-const contactForm = document.getElementById("contact-form");
 if (contactForm) {
     contactForm.addEventListener("submit", async function(event) {
         event.preventDefault();
-        
-        // Lanzar partículas en la posición del botón
         const rect = event.submitter.getBoundingClientRect();
-        createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        createClickParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
         const status = document.getElementById("form-status");
-        const btn = document.getElementById("submit-btn");
+        const btn = contactForm.querySelector('button');
         const data = new FormData(event.target);
 
         btn.textContent = "ENVIANDO IDEA...";
-        btn.classList.add('loading'); // Clase para animar el botón
+        btn.classList.add('loading');
 
         fetch(event.target.action, {
             method: 'POST',
@@ -188,18 +142,16 @@ if (contactForm) {
             headers: { 'Accept': 'application/json' }
         }).then(response => {
             status.style.display = "block";
-            status.classList.add('show-message'); // Animación de entrada
             if (response.ok) {
                 status.textContent = "¡Propuesta enviada! ✨ Revisaré tu idea pronto.";
                 status.style.color = "#00f2ff";
                 contactForm.reset();
             } else {
-                status.textContent = "Hubo un error. ¿Podrías intentar de nuevo?";
+                status.textContent = "Hubo un error al enviar.";
                 status.style.color = "#ff4d4d";
             }
         }).catch(() => {
-            status.style.display = "block";
-            status.textContent = "Error de conexión. Revisa tu internet.";
+            status.textContent = "Error de conexión.";
         }).finally(() => {
             btn.textContent = "ENVIAR MENSAJE";
             btn.classList.remove('loading');
@@ -207,18 +159,10 @@ if (contactForm) {
     });
 }
 
-// Base de datos de tus proyectos
+// --- 5. MODAL DE PROYECTOS ---
 const infoProyectos = {
-    "E-Commerce App": {
-        desc: "Una tienda virtual completa con pasarela de pagos integrada.",
-        tech: ["React", "Node.js", "MongoDB"],
-        link: "https://www.tiendanube.com/co/tienda-en-linea?utm_source=google&utm_medium=cpc&utm_campaign=co-web-search-nobrand-low-region_all-device_c-id_791201217108&utm_content=ecommerce-exact&gad_source=1&gad_campaignid=20421834623&gbraid=0AAAAApO5gLty7I-JlbGyQ3R_04GYk5q0g&gclid=CjwKCAiAkbbMBhB2EiwANbxtbT0327LIZEII818PwOPhc_w3KKlKfXKgF6ZCb9-rLjYWPHYWkjKHWxoC0JUQAvD_BwE"
-    },
-    "Dashboard Admin": {
-        desc: "Panel de control con gráficas en tiempo real para empresas.",
-        tech: ["Chart.js", "Firebase", "Vue"],
-        link: "https://github.com"
-    }
+    "E-Commerce App": { desc: "Tienda virtual completa.", tech: ["React", "Node.js"], link: "#" },
+    "Dashboard Admin": { desc: "Panel de control real-time.", tech: ["Firebase", "Vue"], link: "#" }
 };
 
 const modal = document.getElementById("project-modal");
@@ -226,102 +170,32 @@ const modalBody = document.getElementById("modal-body");
 
 document.querySelectorAll('.glass-card a').forEach(btn => {
     btn.addEventListener('click', (e) => {
+        const card = e.target.closest('.glass-card');
+        if(!card) return;
         e.preventDefault();
-        // Buscamos el título de la tarjeta más cercana
-        const titulo = e.target.closest('.glass-card').querySelector('h3').innerText;
+        const titulo = card.querySelector('h3').innerText;
         const info = infoProyectos[titulo];
-
         if(info) {
-            modalBody.innerHTML = `
-                <h2 class="gradient-text">${titulo}</h2>
-                <p style="margin: 1rem 0;">${info.desc}</p>
-                <div style="margin-bottom: 1.5rem;">
-                    ${info.tech.map(t => `<span class="badge">${t}</span>`).join(' ')}
-                </div>
-                <a href="${info.link}" target="_blank" class="btn">Ir al Sitio Oficial</a>
-            `;
+            modalBody.innerHTML = `<h2 class="gradient-text">${titulo}</h2><p>${info.desc}</p>`;
             modal.style.display = "block";
         }
     });
 });
 
-// Cerrar modal al darle a la X o fuera de la caja
-document.querySelector('.close-modal').onclick = () => modal.style.display = "none";
-
-window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
-
-// 1. Configuración del Fondo de Partículas (Para todas las páginas)
-const canvas = document.getElementById('particleCanvas');
-if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 1 - 0.5;
-            this.speedY = Math.random() * 1 - 0.5;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x > canvas.width) this.x = 0;
-            if (this.x < 0) this.x = canvas.width;
-            if (this.y > canvas.height) this.y = 0;
-            if (this.y < 0) this.y = canvas.height;
-        }
-        draw() {
-            ctx.fillStyle = '#00f2ff'; // Color neón de tu marca
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function init() {
-        for (let i = 0; i < 100; i++) {
-            particles.push(new Particle());
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-        requestAnimationFrame(animate);
-    }
-
-    init();
-    animate();
+if(document.querySelector('.close-modal')) {
+    document.querySelector('.close-modal').onclick = () => modal.style.display = "none";
 }
 
-// 2. Efecto de "Brillo" al pasar el mouse por las tarjetas de servicios
+// --- 6. NAVEGACIÓN Y BRILLO DE TARJETAS ---
 document.querySelectorAll('.price-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
     });
 });
 
-// 3. Sistema de navegación activa
-const currentPath = window.location.pathname.split("/").pop();
+const currentPath = window.location.pathname.split("/").pop() || 'index.html';
 document.querySelectorAll('nav a').forEach(link => {
-    if (link.getAttribute('href') === currentPath) {
-        link.classList.add('active');
-    }
+    if (link.getAttribute('href') === currentPath) link.classList.add('active');
 });
