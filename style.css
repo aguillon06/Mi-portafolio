@@ -580,6 +580,26 @@ body {
     align-items: center;
 }
 
+/* --- Ajuste de la Sección Servicios --- */
+.servicios-section {
+    padding: 60px 20px; /* Reducimos el padding superior para subirla */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el título y subtítulo */
+    justify-content: center;
+    min-height: 80vh; /* Ajustamos la altura para que no flote tan abajo */
+    text-align: center;
+}
+
+.servicios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* ESTO centra las 3 tarjetas horizontalmente */
+    gap: 30px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto 0; /* Centra el bloque de la cuadrícula */
+}
 
 
 
