@@ -168,7 +168,8 @@ const infoProyectos = {
 const modal = document.getElementById("project-modal");
 const modalBody = document.getElementById("modal-body");
 
-document.querySelectorAll('.glass-card a').forEach(btn => {
+// Solo aplica el modal a enlaces que NO sean botones .btn
+document.querySelectorAll('.glass-card a:not(.btn)').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const card = e.target.closest('.glass-card');
         if(!card) return;
@@ -199,3 +200,19 @@ const currentPath = window.location.pathname.split("/").pop() || 'index.html';
 document.querySelectorAll('nav a').forEach(link => {
     if (link.getAttribute('href') === currentPath) link.classList.add('active');
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
